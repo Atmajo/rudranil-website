@@ -1,24 +1,22 @@
 "use client";
 
-import { Category, Image } from "@prisma/client";
+import { Category } from "@prisma/client";
 import { useState, useEffect } from "react";
 
-interface CategoryWithImages extends Category {
-  image: Image[];
-}
-
 interface CategoryResponse {
-  categories: CategoryWithImages[];
+  categories: Category[];
 }
 
 interface UseCategories {
-  categories: CategoryWithImages[];
+  categories: Category[];
   isLoading: boolean;
   error: Error | null;
   refetch: () => Promise<void>;
   createCategory: (data: {
     name: string;
-    image: { url: string; key: string };
+    url: string;
+    key: string;
+    link: string;
   }) => Promise<void>;
   updateCategory: (
     categoryId: string,
@@ -31,14 +29,13 @@ interface UseCategories {
 
 interface CategoryUpdateData {
   name?: string;
-  image?: {
-    url: string;
-    key: string;
-  };
+  url: string;
+  key: string;
+  link?: string;
 }
 
-export const useCategories = (storeId: string): UseCategories => {
-  const [categories, setCategories] = useState<CategoryWithImages[]>([]);
+export const useCategories = (): UseCategories => {
+  const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -48,7 +45,7 @@ export const useCategories = (storeId: string): UseCategories => {
     try {
       setIsLoading(true);
       setError(null);
-      const response = await fetch(`/api/${storeId}/categories`);
+      const response = await fetch(`/api/categories`);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -68,11 +65,13 @@ export const useCategories = (storeId: string): UseCategories => {
 
   const createCategory = async (data: {
     name: string;
-    image: { url: string; key: string };
+    url: string;
+    key: string;
+    link: string;
   }) => {
     try {
       setError(null);
-      const response = await fetch(`/api/${storeId}/categories`, {
+      const response = await fetch(`/api/categories`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -104,8 +103,8 @@ export const useCategories = (storeId: string): UseCategories => {
       setIsUpdating(true);
       setError(null);
 
-      const response = await fetch(`/api/${storeId}/categories/${categoryId}`, {
-        method: "PATCH",
+      const response = await fetch(`/api/categories/${categoryId}`, {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
@@ -141,7 +140,7 @@ export const useCategories = (storeId: string): UseCategories => {
       setIsDeleting(true);
       setError(null);
 
-      const response = await fetch(`/api/${storeId}/categories/${categoryId}`, {
+      const response = await fetch(`/api/categories/${categoryId}`, {
         method: "DELETE",
       });
 
@@ -164,10 +163,8 @@ export const useCategories = (storeId: string): UseCategories => {
   };
 
   useEffect(() => {
-    if (storeId) {
-      fetchCategories();
-    }
-  }, [storeId]);
+    fetchCategories();
+  }, []);
 
   return {
     categories,

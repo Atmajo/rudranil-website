@@ -16,16 +16,14 @@ import { ClientUploadedFileData } from "uploadthing/types";
 import { toast } from "sonner";
 import { LucideLoader, X } from "lucide-react";
 import { deleteUploadthingFiles } from "@/lib/server/uploadthing";
-import axios from "axios";
 import { useCategories } from "@/hooks/use-categories";
 import { usePathname } from "next/navigation";
 
 export const CategorySchema = z.object({
   name: z.string(),
-  image: z.object({
-    url: z.string(),
-    key: z.string(),
-  }),
+  url: z.string(),
+  key: z.string(),
+  link: z.string(),
 });
 
 interface Props {
@@ -38,38 +36,46 @@ const CategoryForm = ({ mode = "create", initialData, setOpen }: Props) => {
   const [uploadedImage, setUploadedImage] = useState<{
     url: string;
     key: string;
-  } | null>(initialData?.image[0] || null);
+  } | null>(
+    initialData ? { url: initialData.url, key: initialData.key } : null
+  );
   const [loading, setLoading] = useState(false);
   const pathname = usePathname();
-  const { createCategory } = useCategories(pathname.split("/")[1]);
+  const { createCategory, updateCategory, refetch } = useCategories();
 
   const form = useForm<z.infer<typeof CategorySchema>>({
     resolver: zodResolver(CategorySchema),
-    defaultValues: initialData || { name: "", image: { url: "", key: "" } },
+    defaultValues: initialData || {
+      name: "",
+      url: "",
+      key: "",
+      link: "",
+    },
   });
 
+  const isEdit = mode === "edit";
+  
   const handleImageUpload = async (res: ClientUploadedFileData<any>[]) => {
     console.log("Files: ", res);
     const image = res[0];
-
+    
     setUploadedImage({
       url: image.appUrl,
       key: image.key,
     });
-    form.setValue("image", {
-      url: image.appUrl,
-      key: image.key,
-    });
-
+    form.setValue("url", image.appUrl);
+    form.setValue("key", image.key);
+    
     toast.success("Upload Completed");
   };
-
+  
   const handleImageDelete = async () => {
     setLoading(true);
     try {
       await deleteUploadthingFiles([uploadedImage?.key as string]);
       setUploadedImage(null);
-      form.setValue("image", { url: "", key: "" });
+      form.setValue("url", "");
+      form.setValue("key", "");
     } catch (error) {
       console.error("Error: ", error);
     } finally {
@@ -80,14 +86,19 @@ const CategoryForm = ({ mode = "create", initialData, setOpen }: Props) => {
   const onSubmit = async (body: z.infer<typeof CategorySchema>) => {
     setLoading(true);
     try {
-      createCategory(body);
+      if (isEdit) {
+        updateCategory(initialData.id, body);
+      } else {
+        createCategory(body);
+      }
       toast.success("Category created successfully");
-      setOpen(false);
+      refetch();
     } catch (error) {
       console.log("Error: ", error);
       toast.error("Failed to create category");
     } finally {
       setLoading(false);
+      setOpen(false);
     }
   };
 
@@ -117,7 +128,7 @@ const CategoryForm = ({ mode = "create", initialData, setOpen }: Props) => {
             <div className="relative w-32 object-cover rounded-md group">
               <img
                 src={uploadedImage.url}
-                alt="Category Image"
+                alt={uploadedImage.url}
                 className="rounded-md"
               />
               {!loading ? (
@@ -141,6 +152,18 @@ const CategoryForm = ({ mode = "create", initialData, setOpen }: Props) => {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Name</FormLabel>
+              <FormControl>
+                <Input {...field} />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+        <FormField
+          name="link"
+          control={form.control}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Drive Link</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>

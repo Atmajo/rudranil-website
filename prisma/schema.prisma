@@ -13,29 +13,24 @@ enum UserRole {
 }
 
 model User {
-  id      String @id @default(auto()) @map("_id") @db.ObjectId
-  email   String @unique
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  email   String   @unique
   name    String
   role    UserRole
-  clerkId String @unique
-  
+  clerkId String   @unique
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-}
-
-model Image {
-  id         String    @id @default(auto()) @map("_id") @db.ObjectId
-  url        String
-  key        String
-  categoryId String?   @db.ObjectId
-  category   Category? @relation(fields: [categoryId], references: [id])
 }
 
 model Category {
   id   String @id @default(auto()) @map("_id") @db.ObjectId
   name String @unique
+  link String
 
-  image Image[]
+  //image
+  url String
+  key String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

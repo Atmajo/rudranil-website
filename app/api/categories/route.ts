@@ -25,25 +25,10 @@ export async function OPTIONS() {
   );
 }
 
-export async function GET(
-  req: Request,
-  { params }: { params: { storeId: string } }
-) {
+export async function GET(req: Request) {
   try {
-    const categories = await prisma.category.findMany({
-      select: {
-        id: true,
-        name: true,
-        image: {
-          select: {
-            url: true,
-            key: true,
-          },
-        },
-        createdAt: true,
-        updatedAt: true,
-      },
-    });
+    const categories = await prisma.category.findMany();
+
     return corsResponse(
       NextResponse.json({ categories: categories }, { status: 200 })
     );
@@ -57,32 +42,20 @@ export async function GET(
   }
 }
 
-export async function POST(
-  req: Request,
-  { params }: { params: { storeId: string } }
-) {
+export async function POST(req: Request) {
   try {
     const body: z.infer<typeof CategorySchema> = await req.json();
 
     const category = await prisma.category.create({
       data: {
         name: body.name,
+        link: body.link,
+        url: body.url,
+        key: body.key,
       },
     });
 
-    const image = await prisma.image.create({
-      data: {
-        url: body.image.url,
-        key: body.image.key,
-        category: {
-          connect: {
-            id: category.id,
-          },
-        },
-      },
-    });
-
-    if (category && image) {
+    if (category) {
       return corsResponse(
         NextResponse.json({ category: category }, { status: 200 })
       );

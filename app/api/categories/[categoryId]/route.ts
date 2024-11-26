@@ -25,7 +25,7 @@ export async function OPTIONS() {
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { storeId: string; categoryId: string } }
+  { params }: { params: { categoryId: string } }
 ) {
   try {
     const data = await request.json();
@@ -53,7 +53,7 @@ export async function POST(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { storeId: string; categoryId: string } }
+  { params }: { params: { categoryId: string } }
 ) {
   try {
     const category = await prisma.category.delete({

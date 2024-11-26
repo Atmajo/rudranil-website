@@ -17,7 +17,7 @@ const layout = ({
   const { user, loading } = useFetchUser();
 
   useEffect(() => {
-    if (!loading && user?.role !== "ADMIN") {
+    if (!loading && user && user.role !== "ADMIN") {
       router.push("/");
     }
   }, [loading, user]);

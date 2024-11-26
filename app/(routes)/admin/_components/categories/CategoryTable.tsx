@@ -20,8 +20,8 @@ interface Props {
 
 const CategoryTable = ({ setOpen, setMode, setInitialData }: Props) => {
   const pathname = usePathname();
-  const { categories, deleteCategory, isLoading, isUpdating, isDeleting } =
-    useCategories(pathname.split("/")[1]);
+  const { categories, deleteCategory, isLoading, isUpdating, isDeleting, refetch } =
+    useCategories();
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredCategories, setFilteredCategories] = useState(categories);
 
@@ -54,8 +54,8 @@ const CategoryTable = ({ setOpen, setMode, setInitialData }: Props) => {
           <TableHeader>
             <TableRow>
               <TableHead>Id</TableHead>
-              <TableHead>Image</TableHead>
               <TableHead>Name</TableHead>
+              <TableHead>Link</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -63,14 +63,8 @@ const CategoryTable = ({ setOpen, setMode, setInitialData }: Props) => {
             {filteredCategories.map((category) => (
               <TableRow key={category.id}>
                 <TableHead>{category.id}</TableHead>
-                <TableHead>
-                  <img
-                    src={category.image[0].url}
-                    alt={category.image[0].key}
-                    className="w-10 h-10 rounded-md"
-                  />
-                </TableHead>
                 <TableHead>{category.name}</TableHead>
+                <TableHead>{category.link}</TableHead>
                 <TableHead className="flex items-center gap-2">
                   <Button
                     size={"icon"}

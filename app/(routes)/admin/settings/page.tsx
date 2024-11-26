@@ -9,7 +9,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
-import Settings from '../../_components/settings/Settings';
+import Settings from '../_components/settings/Settings';
 
 const Page = () => {
   return (

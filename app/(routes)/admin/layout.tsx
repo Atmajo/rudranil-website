@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { useStores } from "@/hooks/use-store";
 import { useRouter } from "next/navigation";
 import { Toaster } from "@/components/ui/toaster";
 import AdminPanelLayout from "@/components/admin-panel/admin-panel-layout";
+import { useFetchUser } from "@/hooks/use-user";
 
 const layout = ({
   children,
@@ -13,14 +13,14 @@ const layout = ({
   children: React.ReactNode;
   params: { storeId: string };
 }) => {
-  const { isLoading, stores } = useStores();
   const router = useRouter();
+  const { user, loading } = useFetchUser();
 
   useEffect(() => {
-    if (!isLoading && stores.length === 0) {
+    if (!loading && user?.role !== "ADMIN") {
       router.push("/");
     }
-  }, [stores]);
+  }, [loading, user]);
 
   return (
     <AdminPanelLayout>

@@ -15,9 +15,6 @@ import {
   TooltipContent,
   TooltipProvider,
 } from "@/components/ui/tooltip";
-import { useStores } from "@/hooks/use-store";
-import ProfileBox from "../ProfileBox";
-import { Separator } from "../ui/separator";
 
 interface MenuProps {
   isOpen: boolean | undefined;
@@ -27,14 +24,10 @@ export function Menu({ isOpen }: MenuProps) {
   const pathname = usePathname();
   const menuList = getMenuList(pathname);
 
-  const { stores } = useStores();
-
   return (
     <ScrollArea className="[&>div>div[style]]:!block">
       <nav className="mt-8 h-full w-full">
         <ul className="flex flex-col min-h-[calc(100vh-48px-36px-16px-32px)] lg:min-h-[calc(100vh-32px-40px-32px)] items-start space-y-1 px-2">
-          <ProfileBox />
-          <Separator />
           {menuList.map(({ groupLabel, menus }, index) => (
             <li className={cn("w-full", groupLabel ? "pt-5" : "")} key={index}>
               {(isOpen && groupLabel) || isOpen === undefined ? (
@@ -67,7 +60,7 @@ export function Menu({ isOpen }: MenuProps) {
                             <Button
                               variant={
                                 (active === undefined &&
-                                  pathname.endsWith("/"+pathname.split("/")[1]+href)) ||
+                                  pathname.startsWith(href)) ||
                                 active
                                   ? "secondary"
                                   : "ghost"
@@ -75,7 +68,7 @@ export function Menu({ isOpen }: MenuProps) {
                               className="w-full justify-start h-10 mb-1"
                               asChild
                             >
-                              <Link href={`/${stores[0]?.value}/${href}`}>
+                              <Link href={`${href}`}>
                                 <span
                                   className={cn(isOpen === false ? "" : "mr-4")}
                                 >

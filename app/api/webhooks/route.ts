@@ -3,6 +3,7 @@ import { Webhook } from "svix";
 import { headers } from "next/headers";
 import { WebhookEvent } from "@clerk/nextjs/server";
 import { createUser } from "@/actions/user";
+import { UserRole } from "@prisma/client";
 
 export async function POST(req: NextRequest) {
   const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET!;
@@ -32,7 +33,7 @@ export async function POST(req: NextRequest) {
 
   // Create a new Svix instance with your secret.
   const wh = new Webhook(WEBHOOK_SECRET);
-  
+
   let evt: WebhookEvent;
 
   // Verify the payload with the headers
@@ -58,16 +59,16 @@ export async function POST(req: NextRequest) {
 
   if (eventType === "user.created") {
     const { id: clerkId, email_addresses, first_name, last_name } = evt.data;
-    
+
     const userData = {
       email: email_addresses[0].email_address,
       name: `${first_name} ${last_name}`,
       clerkId: clerkId,
-      role: "ADMIN",
+      role: "USER" as UserRole,
     };
-
-    const newUser = await createUser(userData);
     
+    const newUser = await createUser(userData);
+
     console.log("New user created:", newUser);
 
     return NextResponse.json({ message: "New user created", user: newUser });

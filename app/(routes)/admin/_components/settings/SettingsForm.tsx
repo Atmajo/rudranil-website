@@ -18,7 +18,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useStores } from "@/hooks/use-store";
 import { usePathname } from "next/navigation";
 import { LucideLoader } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
@@ -27,7 +26,6 @@ const SettingsForm = () => {
   const [loading, setLoading] = useState(false);
 
   const queryClient = useQueryClient();
-  const { isLoading, stores, refetch } = useStores();
   const { user } = useUser();
 
   const pathname = usePathname();

@@ -1,4 +1,4 @@
-import { CategorySchema } from "@/app/(dashboard)/_components/categories/CategoryForm";
+import { CategorySchema } from "@/app/(routes)/admin/_components/categories/CategoryForm";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { z } from "zod";

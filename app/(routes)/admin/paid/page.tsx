@@ -9,6 +9,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
+import Paid from "../_components/paid/Paid";
 
 const Page = () => {
   return (
@@ -26,7 +27,7 @@ const Page = () => {
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <h1>Paid</h1>
+      <Paid />
     </ContentLayout>
   );
 };

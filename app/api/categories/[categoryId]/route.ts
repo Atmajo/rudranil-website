@@ -23,6 +23,31 @@ export async function OPTIONS() {
   );
 }
 
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { categoryId: string } }
+) {
+  try {
+    const category = await prisma.category.findUnique({
+      where: {
+        id: params.categoryId,
+      },
+    });
+
+    if (!category) {
+      return corsResponse(
+        NextResponse.json({ message: "Category not found" }, { status: 404 })
+      );
+    }
+
+    return corsResponse(NextResponse.json({ category: category }));
+  } catch (error) {
+    return corsResponse(
+      NextResponse.json({ message: "Error updating category" }, { status: 500 })
+    );
+  }
+}
+
 export async function POST(
   request: NextRequest,
   { params }: { params: { categoryId: string } }

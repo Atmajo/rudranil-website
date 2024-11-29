@@ -34,4 +34,18 @@ model Category {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  Paid Paid[]
+}
+
+model Paid {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  name    String
+  clerkId String
+
+  categoryid String?   @db.ObjectId
+  category   Category? @relation(fields: [categoryid], references: [id])
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

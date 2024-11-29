@@ -9,6 +9,8 @@ import { UploadDropzone } from "@/lib/utils";
 import { ClientUploadedFileData } from "uploadthing/types";
 import { toast } from "sonner";
 import { deleteUploadthingFiles } from "@/lib/server/uploadthing";
+import Link from "next/link";
+import Header from "@/components/header";
 
 const Page = () => {
   const [uploadedImage, setUploadedImage] = useState<{
@@ -51,12 +53,7 @@ const Page = () => {
 
   return (
     <section className="flex flex-col justify-center items-center">
-      <header className="px-10 py-3 w-full">
-        <nav className="flex justify-between items-center">
-          <h1 className="text-2xl font-semibold">Rudranil's Website</h1>
-          <UserButton />
-        </nav>
-      </header>
+      <Header />
 
       <div className="mt-10 text-center">
         <h1 className="text-3xl font-bold text-center">
@@ -85,25 +82,9 @@ const Page = () => {
           }}
         />
         {uploadedImage && (
-          <div className="relative w-32 object-cover rounded-md group py-10">
-            <img
-              src={uploadedImage.url}
-              alt={uploadedImage.url}
-              className="rounded-md"
-            />
-            {!loading ? (
-              <button
-                onClick={handleImageDelete}
-                className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-              >
-                <X size={16} />
-              </button>
-            ) : (
-              <div className="absolute top-1 right-1 bg-primary p-1 text-white rounded-full">
-                <LucideLoader size={16} className="animate-spin" />
-              </div>
-            )}
-          </div>
+          <Link href={categories[0].link} target="_blank" className="mt-5 bg-gray-400 hover:bg-gray-300 rounded-full px-5 py-2">
+            Drive Link
+          </Link>
         )}
       </div>
     </section>

@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useCategories } from "@/hooks/use-categories";
 import { usePathname } from "next/navigation";
 import {
   Table,
@@ -13,35 +12,25 @@ import {
 import { LucideLoader, Pen, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { usePaid } from "@/hooks/use-paid";
 
-interface Props {
-  setOpen: (open: boolean) => void;
-  setMode: (mode: "create" | "edit") => void;
-  setInitialData: (data: any) => void;
-}
-
-const CategoryTable = ({ setOpen, setMode, setInitialData }: Props) => {
+const PaidTable = () => {
   const pathname = usePathname();
-  const {
-    categories,
-    deleteCategory,
-    isLoading,
-    isUpdating,
-    isDeleting,
-    refetch,
-  } = useCategories();
+  const { paids, isPending, error, addPaid, editPaid, removePaid } = usePaid(
+    []
+  );
   const [searchQuery, setSearchQuery] = useState("");
-  const [filteredCategories, setFilteredCategories] = useState(categories);
+  const [filteredCategories, setFilteredCategories] = useState(paids);
 
   useEffect(() => {
     setFilteredCategories(
-      categories.filter((category) =>
+      paids.filter((category) =>
         category.name.toLowerCase().includes(searchQuery.toLowerCase())
       )
     );
-  }, [searchQuery, categories]);
+  }, [searchQuery, paids]);
 
-  if (isLoading || isUpdating || isDeleting) {
+  if (isPending) {
     return (
       <div className="flex items-center justify-center mt-10">
         <LucideLoader className="animate-spin w-6 h-6" />
@@ -63,32 +52,22 @@ const CategoryTable = ({ setOpen, setMode, setInitialData }: Props) => {
             <TableRow>
               <TableHead>Id</TableHead>
               <TableHead>Name</TableHead>
-              <TableHead>Link</TableHead>
+              <TableHead>Category</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredCategories.map((category) => (
-              <TableRow key={category.id}>
-                <TableHead>{category.id}</TableHead>
-                <TableHead>{category.name}</TableHead>
-                <TableHead>{category.link}</TableHead>
+            {filteredCategories.map((paid) => (
+              <TableRow key={paid.id}>
+                <TableHead>{paid.id}</TableHead>
+                <TableHead>{paid.name}</TableHead>
+                <TableHead>{paid.categoryid}</TableHead>
                 <TableHead className="flex items-center gap-2">
-                  <Button
-                    size={"icon"}
-                    onClick={() => {
-                      setMode("edit");
-                      setInitialData(category);
-                      setOpen(true);
-                    }}
-                  >
-                    <Pen />
-                  </Button>
                   <Button
                     variant={"destructive"}
                     size={"icon"}
-                    onClick={() => deleteCategory(category.id)}
-                    disabled={isDeleting}
+                    onClick={() => removePaid(paid.id)}
+                    disabled={isPending}
                   >
                     <Trash2 />
                   </Button>
@@ -99,13 +78,11 @@ const CategoryTable = ({ setOpen, setMode, setInitialData }: Props) => {
         </Table>
       ) : (
         <TableBody className="flex items-center justify-center w-full">
-          <h1 className="text-gray-400 mt-5 text-center">
-            No categories found.
-          </h1>
+          <h1 className="text-gray-400 mt-5 text-center">No User Paid.</h1>
         </TableBody>
       )}
     </div>
   );
 };
 
-export default CategoryTable;
+export default PaidTable;

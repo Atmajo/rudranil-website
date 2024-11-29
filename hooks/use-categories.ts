@@ -8,10 +8,12 @@ interface CategoryResponse {
 }
 
 interface UseCategories {
+  category: Category;
   categories: Category[];
   isLoading: boolean;
   error: Error | null;
   refetch: () => Promise<void>;
+  fetchCategory: (categoryId: string) => Promise<void>;
   createCategory: (data: {
     name: string;
     url: string;
@@ -36,10 +38,33 @@ interface CategoryUpdateData {
 
 export const useCategories = (): UseCategories => {
   const [categories, setCategories] = useState<Category[]>([]);
+  const [category, setCategory] = useState<Category>();
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+
+  const fetchCategory = async (categoryId: string) => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const response = await fetch(`/api/categories/${categoryId}`);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setCategory(data.category);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err : new Error("Failed to fetch categories")
+      );
+      console.error("Error fetching categories:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const fetchCategories = async () => {
     try {
@@ -167,6 +192,7 @@ export const useCategories = (): UseCategories => {
   }, []);
 
   return {
+    category: category ?? {} as Category,
     categories,
     isLoading,
     isUpdating,
@@ -176,5 +202,6 @@ export const useCategories = (): UseCategories => {
     createCategory,
     updateCategory,
     deleteCategory,
+    fetchCategory,
   };
 };

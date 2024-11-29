@@ -21,7 +21,7 @@ const layout = ({
       router.push("/");
     }
   }, [loading, user]);
-
+  
   return (
     <AdminPanelLayout>
       {children}

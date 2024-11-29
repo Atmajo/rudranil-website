@@ -13,6 +13,7 @@ import { LucideLoader, Pen, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { usePaid } from "@/hooks/use-paid";
+import { deleteUploadthingFiles } from "@/lib/server/uploadthing";
 
 const PaidTable = () => {
   const pathname = usePathname();
@@ -42,7 +43,7 @@ const PaidTable = () => {
     <div className="flex flex-col mt-5">
       <Input
         placeholder="Search"
-        className="w-1/6"
+        className="w-1/2 md:w-1/6"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
       />
@@ -66,7 +67,9 @@ const PaidTable = () => {
                   <Button
                     variant={"destructive"}
                     size={"icon"}
-                    onClick={() => removePaid(paid.id)}
+                    onClick={() => {
+                      removePaid(paid.id);
+                    }}
                     disabled={isPending}
                   >
                     <Trash2 />

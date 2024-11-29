@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { deleteUploadthingFiles } from "@/lib/server/uploadthing";
 import Link from "next/link";
 import Header from "@/components/header";
+import { usePaid } from "@/hooks/use-paid";
 
 const Page = () => {
   const [uploadedImage, setUploadedImage] = useState<{
@@ -20,8 +21,9 @@ const Page = () => {
 
   const { user, loading } = useFetchUser();
   const { categories, isLoading } = useCategories();
+  const { addPaid, isPending } = usePaid([]);
 
-  if (loading || !user || isLoading) {
+  if (loading || !user || isLoading || isPending) {
     return (
       <div className="flex items-center justify-center mt-10">
         <LucideLoader className="animate-spin w-6 h-6" />
@@ -38,9 +40,15 @@ const Page = () => {
       key: image.key,
     });
 
+    await addPaid({
+      name: user.name,
+      clerkId: user.clerkId,
+      categoryId: categories[0].id,
+    });
+
     toast.success("Upload Completed");
   };
-
+  
   const handleImageDelete = async () => {
     try {
       await deleteUploadthingFiles([uploadedImage?.key as string]);
@@ -82,7 +90,11 @@ const Page = () => {
           }}
         />
         {uploadedImage && (
-          <Link href={categories[0].link} target="_blank" className="mt-5 bg-gray-400 hover:bg-gray-300 rounded-full px-5 py-2">
+          <Link
+            href={categories[0].link}
+            target="_blank"
+            className="mt-5 bg-gray-400 hover:bg-gray-300 rounded-full px-5 py-2"
+          >
             Drive Link
           </Link>
         )}

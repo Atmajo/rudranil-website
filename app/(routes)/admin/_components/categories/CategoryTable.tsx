@@ -13,6 +13,7 @@ import {
 import { LucideLoader, Pen, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { deleteUploadthingFiles } from "@/lib/server/uploadthing";
 
 interface Props {
   setOpen: (open: boolean) => void;
@@ -53,7 +54,7 @@ const CategoryTable = ({ setOpen, setMode, setInitialData }: Props) => {
     <div className="flex flex-col mt-5">
       <Input
         placeholder="Search"
-        className="w-1/6"
+        className="w-1/2 md:w-1/6"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
       />
@@ -87,7 +88,10 @@ const CategoryTable = ({ setOpen, setMode, setInitialData }: Props) => {
                   <Button
                     variant={"destructive"}
                     size={"icon"}
-                    onClick={() => deleteCategory(category.id)}
+                    onClick={async () => {
+                      deleteCategory(category.id);
+                      await deleteUploadthingFiles([category.key as string]);
+                    }}
                     disabled={isDeleting}
                   >
                     <Trash2 />

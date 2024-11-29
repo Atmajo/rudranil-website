@@ -1,12 +1,19 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { Paid } from "@prisma/client";
 
 // Fetch all Paid records
-export async function getPaids() {
-  return await prisma.paid.findMany({
+export async function getPaids(): Promise<Paid[]> {
+  const data = await prisma.paid.findMany({
     include: { category: true },
   });
+
+  if (data.length === 0) {
+    return [];
+  }
+  
+  return data;
 }
 
 // Create a new Paid record

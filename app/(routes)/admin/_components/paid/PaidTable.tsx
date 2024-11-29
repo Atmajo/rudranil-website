@@ -17,18 +17,18 @@ import { deleteUploadthingFiles } from "@/lib/server/uploadthing";
 
 const PaidTable = () => {
   const pathname = usePathname();
-  const { paids, isPending, error, addPaid, editPaid, removePaid } = usePaid(
-    []
-  );
+  const { paids, isPending, error, addPaid, editPaid, removePaid } = usePaid();
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredCategories, setFilteredCategories] = useState(paids);
 
   useEffect(() => {
-    setFilteredCategories(
-      paids.filter((category) =>
-        category.name.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    );
+    if (paids) {
+      setFilteredCategories(
+        paids.filter((category) =>
+          category.name.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+      );
+    }
   }, [searchQuery, paids]);
 
   if (isPending) {
@@ -47,7 +47,7 @@ const PaidTable = () => {
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
       />
-      {filteredCategories.length !== 0 ? (
+      {filteredCategories && filteredCategories.length !== 0 ? (
         <Table>
           <TableHeader>
             <TableRow>

@@ -21,7 +21,7 @@ const Page = () => {
 
   const { user, loading } = useFetchUser();
   const { categories, isLoading } = useCategories();
-  const { addPaid, isPending } = usePaid([]);
+  const { addPaid, isPending } = usePaid();
 
   if (loading || !user || isLoading || isPending) {
     return (
@@ -43,9 +43,9 @@ const Page = () => {
     await addPaid({
       name: user.name,
       clerkId: user.clerkId,
-      categoryId: categories[0].id,
+      categoryid: categories[0].id,
     });
-
+    
     toast.success("Upload Completed");
   };
   

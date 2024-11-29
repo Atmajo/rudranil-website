@@ -1,31 +1,54 @@
 "use client"; // Mark the hook for client-side use
 
 import { useState, useTransition } from "react";
-import { createPaid, updatePaid, deletePaid } from "@/actions/paid";
+import { getPaids, createPaid, updatePaid, deletePaid } from "@/actions/paid";
 import { Paid } from "@prisma/client";
+import { useEffect } from "react";
 
-export function usePaid(initialPaids: Paid[] = []) {
-  const [paids, setPaids] = useState(initialPaids);
+interface PaidDataProps {
+  name: string;
+  clerkId: string;
+  categoryid: string;
+}
+
+export function usePaid() {
+  const [paids, setPaids] = useState<Paid[]>();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState(null);
 
-  const addPaid = async (paidData: any) => {
+  const fetchPaids = async () => {
+    try {
+      const data = await getPaids();
+      setPaids(data);
+    } catch (err) {
+      setError(err as any);
+    }
+  };
+
+  useEffect(() => {
+    fetchPaids();
+  }, []);
+
+  const addPaid = async (paidData: PaidDataProps) => {
     startTransition(async () => {
       try {
+        console.log("Creating Paid record with data:", paidData); // Log input data
         const newPaid = await createPaid(paidData);
-        setPaids((prev) => [...prev, newPaid]);
+        console.log("Created Paid record:", newPaid); // Log created record
+        setPaids((prev) => (prev ? [...prev, newPaid] : [newPaid]));
       } catch (err) {
+        console.error("Error creating Paid record:", err); // Detailed error logging
         setError(err as any);
       }
     });
   };
-  
+
   const editPaid = async (id: string, updates: any) => {
     startTransition(async () => {
       try {
         const updatedPaid = await updatePaid(id, updates);
         setPaids((prev) =>
-          prev.map((paid) =>
+          (prev ?? []).map((paid) =>
             paid.id === id ? { ...paid, ...updatedPaid } : paid
           )
         );
@@ -39,7 +62,7 @@ export function usePaid(initialPaids: Paid[] = []) {
     startTransition(async () => {
       try {
         await deletePaid(id);
-        setPaids((prev) => prev.filter((paid) => paid.id !== id));
+        setPaids((prev) => (prev ? prev.filter((paid) => paid.id !== id) : []));
       } catch (err) {
         setError(err as any);
       }
